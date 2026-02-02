@@ -1,0 +1,34 @@
+@media (max-width: 720px){
+.code-card{
+ width: 50%;
+ }
+}
+
+@media (min-width: 768px) {
+    .header h1{
+        font-size: 32px;
+    }
+
+    .header .subtitle {
+        font-size: 16px;
+    }
+
+    .card-header{
+        font-size: 16px;
+    }
+
+    .code-grid {
+        flex-direction: column;
+    }
+
+    .code-card{
+        width: 50%;
+    }
+}
+
+@media (min-width: 900px) {
+  .code-card{
+    width: 100%;
+  }
+  
+}

@@ -1,81 +1,107 @@
+
 document.addEventListener("DOMContentLoaded", function () {
+  // Objetivo:
+  // Enviar um texto de um formulário para uma API do n8n e exibir o resultado o código html, css e colocar a animação no fundo da tela do site.
 
-	// Objetivo:
+  // Passos:
+  // 1. No JavaScript, pegar o evento de submit do formulário para evitar o recarregamento da página.
 
-	// Enviar um texto de um formulário para uma API do n8n e exibir o resultado do código html, css e colocar a animação no fundo da tela do site.
-	// Passos:
-	// 1. No JavaScript, pegar o evento de submit do formulário para evitar o recarregamento da página.
-	const formulario = document.querySelector(".form-group");
-	const descricaoInput = document.getElementById("description");
-	const codigoHtml = document.getElementById("html-code");
-	const codigoCss = document.getElementById("css-code");
-	const secaoPreview = document.getElementById("preview-section");
+  // 2. Obter o valor digitado pelo usuário no campo de texto.
 
-	formulario.addEventListener("submit", async function (evento) {
-		evento.preventDefault(); // Evita o recarregamento da página
+  // 3. Exibir um indicador de carregamento enquanto a requisição está sendo processada.
 
-		// 2. Obter o valor digitado pelo usuário no campo de texto.
-		const descricao = descricaoInput.value.trim();
+  // 4. Fazer uma requisição HTTP (POST) para a API do n8n, enviando o texto do formulário no corpo da requisição em formato JSON.
 
-		if (!descricao) {
-			return;
-		}
+  // 5. Receber a resposta da API do n8n (esperando um JSON com o código HTML/CSS do background).
 
-		// 3. Exibir um indicador de carregamento enquanto a requisição está sendo processada.
-		mostrarCarregamento(true);
+  // 6. Se a resposta for válida, exibir o código HTML/CSS retornado na tela:
 
-		// 4. Fazer uma requisição HTTP (POST) para a API do n8n, enviando o texto do formulário no corpo da requisição em formato JSON.
-		try {
-			const resposta = await fetch("https://ahtohi.app.n8n.cloud/webhook/fundo-magico", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ descricao }),
-			});
+  //    - Mostrar o HTML e CSS gerado em uma área de preview.
+  //    - Inserir o CSS retornado dinamicamente na página para aplicar o background.
 
-			const dados = await resposta.json();
+  // 7. Remover o indicador de carregamento após o recebimento da resposta.
 
-			codigoHtml.textContent = dados.html || "";
-			codigoCss.textContent = dados.css || "";
+  function setLoading(isLoading) {
+    const buttonSpan = document.querySelector(".btn-magic span");
 
-			secaoPreview.style.display = "block";
-			secaoPreview.innerHTML = dados.html || "";
+    if (isLoading) {
+      buttonSpan.innerHTML = "Gerando Background ...";
+    } else {
+      buttonSpan.innerHTML = "Gerar Background Mágico";
+    }
+  }
 
-			let tagEstilo = document.getElementById("estilo-dinamico");
-			//se essa tag já existir, remover ela antes de criar uma nova
-			if (tagEstilo) {
-				tagEstilo.remove();
-			}
+  function applyGeneratedPreview(html, css) {
+    const preview = document.getElementById("preview-section");
 
-			if (dados.css) {
-				tagEstilo = document.createElement("style");
-				tagEstilo.id = "estilo-dinamico";
-				tagEstilo.textContent = dados.css;
-				document.head.appendChild(tagEstilo);
-			}
-		} catch (error) {
-			console.error("Erro ao enviar a requisição:", error);
-			codigoHtml.textContent = "Não consegui gerar o HTML, tente novamente.";
-			codigoCss.textContent = "Não consegui gerar o CSS, tente novamente.";
-			secaoPreview.innerHTML = "";
-		} finally {
-			mostrarCarregamento(false);
-		}
-	});
+    // Exibe o card de preview (pode ter estado `display: none` antes da primeira geração).
+    preview.style.display = "block";
+    // Interpreta a string como markup e renderiza o fundo dentro do card.
+    preview.innerHTML = html;
 
-	function mostrarCarregamento(estaCarregando) {
-		const botaoEnviar = document.getElementById("generate-btn");
-		if (estaCarregando) {
-			botaoEnviar.textContent = "Carregando Background...";
-		} else {
-			botaoEnviar.textContent = "Gerar Background Mágico";
-		}
-	}
+    // Estilos da geração anterior ficam em um <style id="dynamic-style">; removemos para não empilhar CSS.
+    const previousStyle = document.getElementById("dynamic-style");
+    if (previousStyle) previousStyle.remove();
 
-	// 5. Receber a resposta da API do n8n (esperando um JSON com o código HTML/CSS do background).
-	// 6. Se a resposta for válida, exibir o código HTML/CSS retornado na tela:
-	//    - Mostrar o HTML e CSS gerado em uma área de preview.
-	//    - Inserir o CSS retornado dinamicamente na página para aplicar o background.
-	// 7. Remover o indicador de carregamento após o recebimento da resposta.
+    if (css) {
+      // Novo bloco de estilo no <head>: aplica o CSS na página inteira (incluindo o preview).
+      const styleElement = document.createElement("style");
+      styleElement.id = "dynamic-style"; // mesmo id para localizar e remover na próxima vez
+      styleElement.textContent = css;
+      document.head.appendChild(styleElement);
+    }
+  }
+
+  // 1. No JavaScript, pegar o evento de submit do formulário para evitar o recarregamento da página.
+  const form = document.querySelector(".form-group");
+  const textarea = document.getElementById("description");
+
+  form.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    // 2. Obter o valor digitado pelo usuário no campo de texto.
+    const description = textarea.value.trim();
+
+    if (!description) {
+      return;
+    }
+
+    // 3. Exibir um indicador de carregamento enquanto a requisição está sendo processada.
+    setLoading(true);
+
+    // 4. Fazer uma requisição HTTP (POST) para a API do n8n, enviando o texto do formulário no corpo da requisição em formato JSON.
+    try {
+      const response = await fetch(
+        "ADICIONE O SEU WEBHOOK AQUI",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ description }),
+        },
+      );
+
+      // 5. Receber a resposta da API do n8n (esperando um JSON com o código HTML/CSS do background).
+      const data = await response.json();
+
+      console.log(data);
+
+      const htmlCode = document.getElementById("html-code");
+      const cssCode = document.getElementById("css-code");
+
+      htmlCode.textContent = data.html || "";
+      cssCode.textContent = data.css || "";
+
+      applyGeneratedPreview(data.html, data.css);
+    } catch (error) {
+      console.log("Erro ao gerar o fundo:", err);
+
+      htmlCode.textContent = "Não consegui gerar o HTML. Tente novamente.";
+
+      cssCode.textContent = "Não consegui gerar o CSS. Tente novamente.";
+
+      preview.innerHTML = "";
+    } finally {
+      setLoading(false);
+    }
+  });
 });
